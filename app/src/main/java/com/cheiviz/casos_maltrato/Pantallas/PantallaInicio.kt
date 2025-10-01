@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantallaInicio(Siguiente: (String)-> Unit, userPrefs: UserPreferencesDataStore,) {
+fun PantallaInicio(Siguiente: (String) -> Unit, userPrefs: UserPreferencesDataStore) {
 
     val nombre = remember { mutableStateOf("") }
     val rememberMe = remember { mutableStateOf(false) }
@@ -129,8 +129,7 @@ fun PantallaInicio(Siguiente: (String)-> Unit, userPrefs: UserPreferencesDataSto
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             focusedLabelColor = MaterialTheme.colorScheme.primary
                         ),
-                        placeholder = { Text("Ramirez") }
-                    )
+                        placeholder = { Text("Ramirez") })
 
 
                 }
@@ -208,7 +207,6 @@ fun PantallaInicio(Siguiente: (String)-> Unit, userPrefs: UserPreferencesDataSto
 @Composable
 fun PantallaInicioPreview() {
     PantallaInicio(
-        Siguiente = {},
-        userPrefs = UserPreferencesDataStore(context = LocalContext.current)
+        Siguiente = {}, userPrefs = UserPreferencesDataStore(context = LocalContext.current)
     )
 }

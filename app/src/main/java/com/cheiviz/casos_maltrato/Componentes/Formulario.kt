@@ -31,7 +31,7 @@ data class Formulario(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormularioReporteMaltrato(nombreUsuario: String, anonimo: Boolean) {
+fun FormularioReporteMaltrato(nombreUsuario: String, anonimo: Boolean, Atras: (String) -> Unit) {
     // Opciones desplegable
     val opciones = listOf("Físico", "Psicológico", "Escolar", "Animal", "Económico", "Digital")
 
@@ -42,7 +42,6 @@ fun FormularioReporteMaltrato(nombreUsuario: String, anonimo: Boolean) {
     var descripcion by remember { mutableStateOf("") }
     var ubicacion by remember { mutableStateOf("") }
     var imagenUrl by remember { mutableStateOf("") }
-
 
 
     // Estado para mostrar confirmación
@@ -242,7 +241,7 @@ fun FormularioReporteMaltrato(nombreUsuario: String, anonimo: Boolean) {
             Button(
                 onClick = {
                     enviarReporte(
-                        nombreUsuario = nombreUsuario , // luego lo obtienes de DataStore
+                        nombreUsuario = nombreUsuario, // luego lo obtienes de DataStore
                         anonimo = anonimo,           // también desde DataStore
                         tipo = opcionSeleccionada,
                         descripcion = descripcion,
@@ -250,6 +249,7 @@ fun FormularioReporteMaltrato(nombreUsuario: String, anonimo: Boolean) {
                         imagenUrl = if (imagenUrl.isNotBlank()) imagenUrl else null
                     )
                     showConfirmation = true
+                    Atras("home/$nombreUsuario")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -318,7 +318,8 @@ fun FormularioReporteMaltrato(nombreUsuario: String, anonimo: Boolean) {
 fun PreviewFormularioReporteMaltrato() {
     FormularioReporteMaltrato(
         nombreUsuario = "Juan",
-        anonimo = false
+        anonimo = false,
+        Atras = {}
     )
 }
 
@@ -329,7 +330,7 @@ fun enviarReporte(
     descripcion: String,
     ubicacion: String,
     imagenUrl: String?
-){
+) {
 
     val database = FirebaseDatabase.getInstance().getReference("reportes")
 

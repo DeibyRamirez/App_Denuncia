@@ -40,8 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun PantallaPrincipal(nombre: String, Atras: (String) -> Unit, IrAFormulario: () -> Unit, IrAReporte: () -> Unit) {
-
+fun PantallaPrincipal(
+    nombre: String,
+    Atras: (String) -> Unit,
+    IrAFormulario: () -> Unit,
+    IrAReporte: () -> Unit
+) {
 
 
     Box(
@@ -118,7 +122,7 @@ fun PantallaPrincipal(nombre: String, Atras: (String) -> Unit, IrAFormulario: ()
                 icon = Icons.Default.Warning, // Icono estándar disponible
                 backgroundColor = MaterialTheme.colorScheme.errorContainer,
                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                onClick = { IrAFormulario()}
+                onClick = { IrAFormulario() }
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -161,7 +165,7 @@ fun PantallaPrincipal(nombre: String, Atras: (String) -> Unit, IrAFormulario: ()
             ) {
 
                 Text(text = "Salir", fontSize = 20.sp)
-    }
+            }
         }
     }
 }

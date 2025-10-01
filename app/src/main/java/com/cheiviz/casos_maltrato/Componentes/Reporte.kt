@@ -1,6 +1,6 @@
 package com.cheiviz.casos_maltrato.Componentes
 
-import android.R.attr.contentDescription
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,12 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Person
-
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
-
 import androidx.compose.material.icons.filled.LocationOn
-
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,11 +29,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
+
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+fun formatearFecha(timestamp: Long): String {
+    val date = Date(timestamp) // Convierte el número en una fecha
+    val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+    return formato.format(date) // Devuelve la fecha como texto
+}
 
 @Composable
 fun ReporteEnLista(
@@ -99,7 +105,7 @@ fun ReporteEnLista(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = fecha, // 👈 Fecha dinámica
+                        text = formatearFecha(System.currentTimeMillis()), // 👈 Fecha dinámica
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -125,9 +131,14 @@ fun ReporteEnLista(
 }
 
 
-
 @Composable
-fun ReporteCompleto() {
+fun ReporteCompleto(
+    titulo: String,
+    descripcion: String,
+    ubicacion: String,
+    fecha: Long,
+    usuario: String
+) {
     Box(
         modifier = Modifier
             .padding(20.dp)
@@ -138,127 +149,77 @@ fun ReporteCompleto() {
             .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surface)
     ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(10.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(8.dp)
-            ) {
-                // MEJORA 4: Datos del Reporte con iconos y mejor tipografía
-                Column(
-                    modifier = Modifier.weight(2f)
-                ) {
-                    // Título
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Título",
-                            tint = Color.White,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            "Titulo",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                    }
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Título
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.KeyboardArrowRight,
+                    contentDescription = "Título",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    titulo,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-                    Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-                    // Descripción
-                    Row(
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Icon(
-                            Icons.Default.Create,
-                            contentDescription = "Descripción",
-                            tint = Color.White,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            "Descripcion",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.White,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
+            // Descripción
+            Row(verticalAlignment = Alignment.Top) {
+                Icon(
+                    Icons.Default.Create,
+                    contentDescription = "Descripción",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(descripcion, style = MaterialTheme.typography.bodyLarge)
+            }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-                    // Ubicación
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.LocationOn,
-                            contentDescription = "Ubicación",
-                            tint = Color.White,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            "Ubicacion",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.White
-                        )
-                    }
+            // Ubicación
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.LocationOn,
+                    contentDescription = "Ubicación",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(ubicacion, style = MaterialTheme.typography.bodyLarge)
+            }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-                    // Fecha
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.DateRange,
-                            contentDescription = "Fecha",
-                            tint = Color.White,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            "Fecha",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.White
-                        )
-                    }
-                }
+            // Fecha
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.DateRange,
+                    contentDescription = "Fecha",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(formatearFecha(fecha), style = MaterialTheme.typography.bodyLarge)
+            }
 
-                Spacer(modifier = Modifier.width(40.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-                // MEJORA 5: Datos del Usuario con mejor diseño
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        Icons.Default.Person,
-                        contentDescription = "Usuario",
-                        tint = Color.White,
-                        modifier = Modifier.size(40.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(30.dp))
-
-                    Text(
-                        "Nombre",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.White
-                    )
-                }
+            // Usuario
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.Person,
+                    contentDescription = "Usuario",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(usuario, style = MaterialTheme.typography.bodyLarge)
             }
         }
     }
 }
+
 
 @Preview
 @Composable
@@ -289,6 +250,14 @@ fun PreviewReporteCompleto() {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        ReporteCompleto()
+        ReporteCompleto(
+            titulo = "Titulo",
+            descripcion = "Descripcion",
+            ubicacion = "Ubicacion",
+            fecha = System.currentTimeMillis(),
+            usuario = "Usuario"
+        )
     }
 }
+
+
