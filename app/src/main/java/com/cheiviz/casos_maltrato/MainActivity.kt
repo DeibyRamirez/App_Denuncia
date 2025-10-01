@@ -4,58 +4,58 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cheiviz.casos_maltrato.Componentes.FormularioReporteMaltrato
-import com.cheiviz.casos_maltrato.Componentes.ReporteEnLista
+import com.cheiviz.casos_maltrato.Componentes.UserPreferences
 import com.cheiviz.casos_maltrato.Componentes.UserPreferencesDataStore
 import com.cheiviz.casos_maltrato.Pantallas.PantallaInicio
 import com.cheiviz.casos_maltrato.Pantallas.PantallaPrincipal
+import com.cheiviz.casos_maltrato.Pantallas.ReportesScreen
 import com.cheiviz.casos_maltrato.ui.theme.Casos_MaltratoTheme
-import kotlin.getValue
+
 
 class MainActivity : ComponentActivity() {
 
     private val userPrefs by lazy { UserPreferencesDataStore(this) }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             Casos_MaltratoTheme {
-                NavegacionPantallas(/*taskDataStore*/)
+                NavegacionPantallas( userPrefs)
             }
-
-
         }
     }
 }
 
 @Composable
-fun NavegacionPantallas() {
-    val navController = rememberNavController()
+fun NavegacionPantallas( userPrefs: UserPreferencesDataStore) {
 
-    NavHost(navController = navController, startDestination = "login") {
+    val navController = rememberNavController()
+    val userData by userPrefs.getUserData().collectAsState(
+        initial = UserPreferences("", false) // valor por defecto
+    )
+
+
+                NavHost(navController = navController, startDestination = "login") {
+
+        // Pantalla de inicio (login / nombre usuario)
         composable("login") {
-            PantallaInicio(Siguiente = { nombre ->
+            PantallaInicio( userPrefs = userPrefs,  Siguiente = { nombre ->
                 navController.navigate("home/$nombre")
             })
         }
+
+        // Pantalla principal
         composable("home/{username}") { backStackEntry ->
             val nombre = backStackEntry.arguments?.getString("username") ?: ""
             PantallaPrincipal(
@@ -65,32 +65,30 @@ fun NavegacionPantallas() {
                 IrAReporte = { navController.navigate("reporte") }
             )
         }
+
+        // Pantalla de lista de reportes
         composable("reporte") {
-
-            Column(modifier = Modifier.padding(16.dp)) {
-
-                Text("Lista de Reportes", style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
-                ReporteEnLista(
-                    Ingresar = { }
-                )
-                ReporteEnLista(
-                    Ingresar = { }
-                )
-                ReporteEnLista(
-                    Ingresar = { }
-                )
+            ReportesScreen { reporteId ->
+                navController.navigate("Reporte_completo/$reporteId")
             }
-
-        }
-        composable("Reporte_completo"){
-
         }
 
-        composable( "formulario"){
-            FormularioReporteMaltrato()
+        // Pantalla de detalle de un reporte
+        composable("Reporte_completo/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            // Aquí puedes traer de Firebase el reporte por ID y mostrarlo
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Detalle del reporte con ID: $id", style = MaterialTheme.typography.headlineMedium)
+            }
+        }
 
+        // Pantalla de formulario
+        composable("formulario") {
+            FormularioReporteMaltrato(
+                nombreUsuario = userData.nombre,
+                anonimo = userData.anonimo
+            )
         }
     }
-
 }
+

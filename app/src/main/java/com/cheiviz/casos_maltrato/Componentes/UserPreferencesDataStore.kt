@@ -7,9 +7,16 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore(name = "user_prefs")
+
+
+data class UserPreferences(
+    val nombre: String,
+    val anonimo: Boolean
+)
 
 class UserPreferencesDataStore(private val context: Context) {
     companion object {
@@ -17,13 +24,19 @@ class UserPreferencesDataStore(private val context: Context) {
         val ANONIMO = booleanPreferencesKey("anonimo")
     }
 
-    val userName: Flow<String> = context.dataStore.data.map { prefs ->
+    private val userName: Flow<String> = context.dataStore.data.map { prefs ->
         prefs[NICKNAME] ?: "Anónimo"
     }
 
-    val isAnonimo: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    private val isAnonimo: Flow<Boolean> = context.dataStore.data.map { prefs ->
         prefs[ANONIMO] ?: false
     }
+
+    // 👇 Nuevo: combinamos en un único objeto UserPreferences
+    fun getUserData(): Flow<UserPreferences> =
+        combine(userName, isAnonimo) { name, anonimo ->
+            UserPreferences(name, anonimo)
+        }
 
     suspend fun saveUserData(name: String, anonimo: Boolean) {
         context.dataStore.edit { prefs ->

@@ -31,10 +31,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -42,13 +44,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cheiviz.casos_maltrato.Componentes.UserPreferencesDataStore
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantallaInicio(Siguiente: (String)-> Unit) {
+fun PantallaInicio(Siguiente: (String)-> Unit, userPrefs: UserPreferencesDataStore,) {
 
     val nombre = remember { mutableStateOf("") }
     val rememberMe = remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()  // <- aquí obtienes el scope
 
 
     Box(
@@ -134,10 +141,12 @@ fun PantallaInicio(Siguiente: (String)-> Unit) {
             // MEJORA 7: Botón con mejor diseño y colores del tema
             Button(
                 onClick = { // Si no escribió nada, puedes obligarlo
-                    if (nombre.value.isBlank()) {
-                        nombre.value = "Anónimo" // fallback opcional
+                    val nombreFinal = if (nombre.value.isBlank()) "Anónimo" else nombre.value
+                    // Guardar en DataStore
+                    coroutineScope.launch {
+                        userPrefs.saveUserData(nombreFinal, false) // o true si es cuenta anónima
                     }
-                    Siguiente(nombre.value)
+                    Siguiente(nombreFinal)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -199,6 +208,7 @@ fun PantallaInicio(Siguiente: (String)-> Unit) {
 @Composable
 fun PantallaInicioPreview() {
     PantallaInicio(
-        Siguiente = {}
+        Siguiente = {},
+        userPrefs = UserPreferencesDataStore(context = LocalContext.current)
     )
 }

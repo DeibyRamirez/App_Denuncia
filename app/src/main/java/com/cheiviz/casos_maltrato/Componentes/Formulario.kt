@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.firebase.database.FirebaseDatabase
 
 // Modelo de datos
 data class Formulario(
@@ -30,7 +31,7 @@ data class Formulario(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FormularioReporteMaltrato() {
+fun FormularioReporteMaltrato(nombreUsuario: String, anonimo: Boolean) {
     // Opciones desplegable
     val opciones = listOf("Físico", "Psicológico", "Escolar", "Animal", "Económico", "Digital")
 
@@ -41,6 +42,8 @@ fun FormularioReporteMaltrato() {
     var descripcion by remember { mutableStateOf("") }
     var ubicacion by remember { mutableStateOf("") }
     var imagenUrl by remember { mutableStateOf("") }
+
+
 
     // Estado para mostrar confirmación
     var showConfirmation by remember { mutableStateOf(false) }
@@ -238,14 +241,14 @@ fun FormularioReporteMaltrato() {
 
             Button(
                 onClick = {
-                    val reporte = Formulario(
+                    enviarReporte(
+                        nombreUsuario = nombreUsuario , // luego lo obtienes de DataStore
+                        anonimo = anonimo,           // también desde DataStore
                         tipo = opcionSeleccionada,
                         descripcion = descripcion,
                         ubicacion = ubicacion,
                         imagenUrl = if (imagenUrl.isNotBlank()) imagenUrl else null
                     )
-                    // Aquí puedes guardar en BD o mostrar log
-                    println("Reporte enviado: $reporte")
                     showConfirmation = true
                 },
                 modifier = Modifier
@@ -313,5 +316,34 @@ fun FormularioReporteMaltrato() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewFormularioReporteMaltrato() {
-    FormularioReporteMaltrato()
+    FormularioReporteMaltrato(
+        nombreUsuario = "Juan",
+        anonimo = false
+    )
+}
+
+fun enviarReporte(
+    nombreUsuario: String,
+    anonimo: Boolean,
+    tipo: String,
+    descripcion: String,
+    ubicacion: String,
+    imagenUrl: String?
+){
+
+    val database = FirebaseDatabase.getInstance().getReference("reportes")
+
+    val reporteId = database.push().key ?: return
+    val reporte = mapOf(
+        "id" to reporteId,
+        "usuario" to if (anonimo) "Anónimo" else nombreUsuario,
+        "tipo" to tipo,
+        "descripcion" to descripcion,
+        "ubicacion" to ubicacion,
+        "imagenUrl" to imagenUrl,
+        "fecha" to System.currentTimeMillis()
+    )
+
+    database.child(reporteId).setValue(reporte)
+
 }

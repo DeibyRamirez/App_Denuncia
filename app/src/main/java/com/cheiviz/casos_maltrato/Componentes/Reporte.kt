@@ -39,7 +39,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ReporteEnLista(Ingresar: (String)-> Unit) {
+fun ReporteEnLista(
+    titulo: String,
+    descripcion: String,
+    ubicacion: String,
+    usuario: String,
+    fecha: String,
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .padding(10.dp)
@@ -60,18 +67,17 @@ fun ReporteEnLista(Ingresar: (String)-> Unit) {
                 .padding(10.dp)
         ) {
             Row(
-                modifier = Modifier
-                    .align(Alignment.CenterStart),
+                modifier = Modifier.align(Alignment.CenterStart),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // MEJORA 1: Icono y texto del título con mejor diseño
+                // ICONO Y TÍTULO
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
                 ) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Titulo",
+                        text = titulo, // 👈 Aquí va el título dinámico
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurface
@@ -80,7 +86,7 @@ fun ReporteEnLista(Ingresar: (String)-> Unit) {
 
                 Spacer(modifier = Modifier.width(20.dp))
 
-                // MEJORA 2: Icono y texto de fecha mejorados
+                // FECHA
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
@@ -93,7 +99,7 @@ fun ReporteEnLista(Ingresar: (String)-> Unit) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Fecha",
+                        text = fecha, // 👈 Fecha dinámica
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -101,24 +107,24 @@ fun ReporteEnLista(Ingresar: (String)-> Unit) {
 
                 Spacer(modifier = Modifier.width(20.dp))
 
+                // BOTÓN DE ACCIÓN
                 IconButton(
-                    onClick = { Ingresar("Reporte") },
-                    modifier = Modifier.size(40.dp) // el tamaño del botón, no del icono
+                    onClick = onClick,
+                    modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = "Ir",
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp) // tamaño del ícono dentro del botón
+                        modifier = Modifier.size(24.dp)
                     )
                 }
-
-
-
             }
         }
     }
 }
+
+
 
 @Composable
 fun ReporteCompleto() {
@@ -264,7 +270,12 @@ fun PreviewReportes() {
             .padding(16.dp)
     ) {
         ReporteEnLista(
-            Ingresar = { }
+            titulo = "Titulo",
+            descripcion = "Descripcion",
+            ubicacion = "Ubicacion",
+            usuario = "Usuario",
+            fecha = "Fecha"
+
 
         )
     }
